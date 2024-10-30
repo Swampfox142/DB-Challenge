@@ -1,0 +1,29 @@
+1. Create indecies on frequently queried columns.
+Given that the Books table doesn't have too many columns and that it is likely queries are made
+from a library catalog system in which the user selects which field to query, it would be best to index
+'title', 'genre', and 'published_date'. This will significantly reduce the number of rows parsed during
+queries on these fields.
+
+2. Avoid returning more data than necessary for a given query.
+For example, suppose a user wishes to perform a query to view a subset of all the books,
+say they want to view all the 'fiction' books from a specific publication date range.
+Likely, the catalog system will display a list of just the metadata of these books;
+the user can then browse through the list and select on one of the books if they want to view
+more extensive information about that book. In this use case, it could save a lot query time to return
+only the metadata of each book in a first query for the initial list, and then return a more exhastive list
+of information in a second query by selected book id.
+
+3. Partitioning
+Depending on frequently run queries, it might be beneficial to split tables up into sub tables to reduce query time
+For example, partitioning the Books table could easily be split into similarily-sized subtables based on
+publication year or year range. For example, there could be a table specifically for books published in the 2010s.
+Then, any time this a query calls for the set of 2010s books (or a subset of 2010s books), this subtable could 
+be called instead of the entire Books table, significantly reducing the number of rows to query.
+
+4. Caching
+Cache queries to frequently-queried lists. For example, querying by genre or book popularity is likely very
+common, and many bookstore/library interfaces even accomadate this by having tabs dedicated specifically for 
+each of these lists. Instead of performing a query on the entire Books table every time a user wants to view
+'fiction' books, this particular query could run once when the library catalog is loaded so that when the user
+wants to go back to the 'fiction' books list a second time, the data is already loaded and does not need to be
+re-queried.
